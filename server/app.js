@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(requestLogger);
 app.use("/api/v1", apiRateLimiter);
 
-const openApiPath = path.join(__dirname, "docs", "openapi.yaml");
+const openApiPath = path.join(__dirname, "..", "docs", "openapi.yaml");
 const openApiDocument = YAML.load(openApiPath);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
