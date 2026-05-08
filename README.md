@@ -1,227 +1,226 @@
-# Finance Data Processing and Access Control Backend
+# Finance Dashboard Assignment (Backend + Frontend)
 
-Backend assignment implementation using **Node.js + Express + PostgreSQL**.
+Internship assignment project implementing secure REST APIs with JWT + RBAC and a React frontend.
 
-## Tech Stack
+## Current Status
 
-- Node.js (Express)
-- PostgreSQL (`pg`)
-- Zod (input validation)
-- JWT (authentication)
-- Role-based access control (action-based permissions)
+### Assignment Coverage
 
-## Features Delivered
+- [x] User registration & login APIs
+- [x] Password hashing (`bcryptjs`)
+- [x] JWT authentication
+- [x] Role-based access (`viewer`, `admin`)
+- [x] CRUD APIs for secondary entity (`financial_records`)
+- [x] API versioning (`/api/v1`)
+- [x] Validation + structured error handling
+- [x] API documentation (OpenAPI + Postman)
+- [x] PostgreSQL integration
+- [x] Scalable modular backend architecture
+- [x] Basic React frontend (auth, dashboard, records, user management)
+- [x] Dockerized Postgres setup
 
-- User management (`viewer`, `analyst`, `admin`)
-- User status management (`active`, `inactive`)
-- Role-based access control at middleware level
-- Financial records CRUD with filtering and pagination
-- Dashboard analytics APIs:
-  - Total income
-  - Total expense
-  - Net balance
-  - Category-wise totals
-  - Monthly/weekly trends
-  - Recent activity
-- Validation and structured error responses
-- PostgreSQL persistence with SQL schema
-- Default admin bootstrap script
+## RBAC Model
 
-## Project Structure
+- `viewer`
+  - Can access dashboard analytics
+  - Can list/read financial records
+  - Cannot create/update/delete records
+  - Cannot manage users
+
+- `admin`
+  - Full dashboard access
+  - Full records CRUD
+  - Full user management:
+    - create viewer/admin user
+    - edit user
+    - deactivate user
+    - permanently delete user (blocked if linked financial records exist)
+
+## Backend Structure
 
 ```text
-finance-dashboard/
+server/
+  app.js
+  server.js
+  config/
+  constants/
+  middleware/
+  routes/
+  services/
+  utils/
+  validation/
   db/
-    schema.sql
   scripts/
-    setupDb.js
-  src/
-    config/
-    constants/
-    middleware/
-    routes/
-    services/
-    utils/
-    validation/
-    app.js
-    server.js
   tests/
-    permissions.test.js
+  docs/
+  postman/
 ```
+
+## Frontend Structure
+
+```text
+client/src/
+  api/
+  components/
+  context/
+  hooks/
+  layouts/
+  pages/
+  routes/
+  services/
+  utils/
+```
+
+## API Base URL
+
+- `http://localhost:4000/api/v1`
+
+## Important URLs
+
+- Health: `GET /health`
+- Swagger UI: `GET /api-docs`
+
+## Core Endpoints
+
+### Auth
+
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
+
+### Users (Admin)
+
+- `GET /api/v1/users`
+- `POST /api/v1/users`
+- `GET /api/v1/users/:id`
+- `PATCH /api/v1/users/:id`
+- `DELETE /api/v1/users/:id` (deactivate)
+- `DELETE /api/v1/users/:id/permanent` (hard delete)
+
+### Records
+
+- `GET /api/v1/records` (viewer/admin)
+- `GET /api/v1/records/:id` (viewer/admin)
+- `POST /api/v1/records` (admin)
+- `PATCH /api/v1/records/:id` (admin)
+- `DELETE /api/v1/records/:id` (admin, soft delete)
+
+### Dashboard
+
+- `GET /api/v1/dashboard/summary`
+- `GET /api/v1/dashboard/category-totals`
+- `GET /api/v1/dashboard/trends?period=monthly|weekly`
+- `GET /api/v1/dashboard/recent-activity?limit=10`
 
 ## Setup
 
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Configure environment:
-
-```bash
-cp .env.example .env
-```
-
-3. Start PostgreSQL (Option A: Docker):
+### 1) Database (Docker)
 
 ```bash
 docker compose up -d
 ```
 
-4. Create tables and seed default admin:
+### 2) Backend
 
 ```bash
+cd server
+npm install
 npm run db:setup
-```
-
-5. Start API:
-
-```bash
 npm run dev
 ```
 
-Base URL: `http://localhost:4000`
+### 3) Frontend
 
-## Default Admin Credentials
-
-- Email: `admin@finance.local`
-- Password: `admin12345`
-
-You can override these via `.env`.
-
-## Authentication
-
-- `POST /api/auth/login` returns a JWT access token.
-- Pass token in header:
-
-```text
-Authorization: Bearer <token>
+```bash
+cd client
+npm install
+npm run dev
 ```
 
-## Role Access Matrix
+## Environment Variables
 
-- `viewer`: dashboard read only
-- `analyst`: dashboard + financial records read
-- `admin`: full access (users + records + dashboard)
+### `server/.env`
 
-## API Endpoints
+```env
+PORT=4000
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/finance_dashboard
+JWT_SECRET=replace_with_a_secure_random_string
+JWT_EXPIRES_IN=1d
+DEFAULT_ADMIN_NAME=System Admin
+DEFAULT_ADMIN_EMAIL=admin@finance.local
+DEFAULT_ADMIN_PASSWORD=admin12345
+```
 
-### Auth
+### `client/.env`
 
-- `POST /api/auth/login`
-- `GET /api/auth/me`
+```env
+VITE_API_BASE_URL=http://localhost:4000/api/v1
+```
 
-### Users (admin only)
+## API Documentation Files
 
-- `POST /api/users`
-- `GET /api/users`
-- `GET /api/users/:id`
-- `PATCH /api/users/:id`
+- OpenAPI: `server/docs/openapi.yaml`
+- Postman: `server/postman/Finance-Dashboard.postman_collection.json`
 
-### Financial Records
+## Sample Test Records (Create as Admin)
 
-- `GET /api/records` (analyst, admin)
-- `GET /api/records/:id` (analyst, admin)
-- `POST /api/records` (admin)
-- `PATCH /api/records/:id` (admin)
-- `DELETE /api/records/:id` (admin)
-
-Supported list filters:
-
-- `startDate` (`YYYY-MM-DD`)
-- `endDate` (`YYYY-MM-DD`)
-- `category`
-- `search` (matches `category` and `notes`)
-- `type` (`income` | `expense`)
-- `limit`
-- `offset`
-
-### Dashboard
-
-- `GET /api/dashboard/summary`
-- `GET /api/dashboard/category-totals`
-- `GET /api/dashboard/trends?period=monthly|weekly`
-- `GET /api/dashboard/recent-activity?limit=10`
-
-All dashboard endpoints are available to `viewer`, `analyst`, and `admin`.
-
-## Example Payloads
-
-### Login
-
-`POST /api/auth/login`
+Use `POST /api/v1/records` with these payloads:
 
 ```json
 {
-  "email": "admin@finance.local",
-  "password": "admin12345"
-}
-```
-
-### Create User (admin)
-
-`POST /api/users`
-
-```json
-{
-  "fullName": "Alex Johnson",
-  "email": "alex@example.com",
-  "password": "pass12345",
-  "role": "analyst",
-  "status": "active"
-}
-```
-
-### Create Financial Record (admin)
-
-`POST /api/records`
-
-```json
-{
-  "amount": 1200.5,
+  "amount": 84500,
   "type": "income",
   "category": "Salary",
-  "date": "2026-04-02",
+  "date": "2026-05-01",
   "notes": "Monthly salary credit"
 }
 ```
 
-## Validation and Errors
+```json
+{
+  "amount": 12000,
+  "type": "expense",
+  "category": "Rent",
+  "date": "2026-05-02",
+  "notes": "Apartment rent"
+}
+```
 
-- Invalid input returns `400` with validation details.
-- Unauthorized requests return `401`.
-- Forbidden role actions return `403`.
-- Missing resources return `404`.
-- Duplicate users return `409`.
-- Rate-limited requests return `429`.
+```json
+{
+  "amount": 3500,
+  "type": "expense",
+  "category": "Groceries",
+  "date": "2026-05-03",
+  "notes": "Weekly groceries"
+}
+```
 
-## Assumptions and Tradeoffs
+```json
+{
+  "amount": 6000,
+  "type": "income",
+  "category": "Freelance",
+  "date": "2026-05-05",
+  "notes": "Side project payment"
+}
+```
 
-- Single JWT access token flow is used (no refresh token flow).
-- Records are soft deleted (`deleted_at`) so deleted records are hidden from list/read/summary queries.
-- SQL migration tooling was kept lightweight (`schema.sql` + setup script) to keep focus on assignment logic.
+```json
+{
+  "amount": 1800,
+  "type": "expense",
+  "category": "Transport",
+  "date": "2026-05-06",
+  "notes": "Fuel and commute"
+}
+```
 
-## Optional Enhancements Implemented
+## Why This Architecture Is Scalable
 
-- Token-based authentication (JWT)
-- Pagination for records list
-- Search support (`search` query)
-- Soft delete functionality for records
-- API rate limiting (200 requests / 15 minutes per IP on `/api`)
-- Unit tests (RBAC permission test)
-- API documentation (README + Postman collection/environment)
-
-## Postman Collection
-
-Import this file in Postman:
-
-- `postman/Finance-Dashboard.postman_collection.json`
-- `postman/Finance-Dashboard.local.postman_environment.json`
-
-Suggested run order:
-
-1. `Auth > Login Admin`
-2. `Users (Admin) > Create Analyst User`
-3. `Auth > Login Analyst`
-4. Remaining requests in any order
+- Stateless JWT-based auth enables horizontal scaling.
+- Modular route/service/middleware layers support feature growth.
+- Pagination and filtering keep list queries efficient.
+- Indexed record fields improve analytics/query speed.
+- Dashboard endpoints are cache-friendly (Redis-ready).
+- App can be deployed as multiple backend instances behind a load balancer.

@@ -1,0 +1,205 @@
+{
+  "info": {
+    "_postman_id": "9f6f7a49-5e84-4c57-a92d-9d73b9a2f001",
+    "name": "Finance Dashboard API v1 (Viewer/Admin)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Updated collection for /api/v1 with viewer/admin RBAC."
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Viewer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Demo Viewer\",\n  \"email\": \"viewer@example.com\",\n  \"password\": \"viewer123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["const json = pm.response.json();", "pm.environment.set('adminToken', json.data.token);", "pm.environment.set('adminUserId', json.data.user.id);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@finance.local\",\n  \"password\": \"admin12345\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login Viewer",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["const json = pm.response.json();", "pm.environment.set('viewerToken', json.data.token);", "pm.environment.set('viewerUserId', json.data.user.id);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"viewer@example.com\",\n  \"password\": \"viewer123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "item": [
+        {
+          "name": "Create Viewer (Admin)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["const json = pm.response.json();", "pm.environment.set('createdViewerId', json.data.id);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Viewer Two\",\n  \"email\": \"viewer2@example.com\",\n  \"password\": \"viewer123\",\n  \"role\": \"viewer\",\n  \"status\": \"active\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users"] }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/users", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users"] }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{createdViewerId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{createdViewerId}}"] }
+          }
+        },
+        {
+          "name": "Delete User Permanently",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{createdViewerId}}/permanent", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{createdViewerId}}", "permanent"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Records",
+      "item": [
+        {
+          "name": "Create Record (Admin)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["const json = pm.response.json();", "pm.environment.set('recordId', json.data.id);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"amount\": 84500,\n  \"type\": \"income\",\n  \"category\": \"Salary\",\n  \"date\": \"2026-05-01\",\n  \"notes\": \"Monthly salary\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/records", "host": ["{{baseUrl}}"], "path": ["api", "v1", "records"] }
+          }
+        },
+        {
+          "name": "List Records (Viewer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/records?limit=20&offset=0", "host": ["{{baseUrl}}"], "path": ["api", "v1", "records"], "query": [{"key":"limit","value":"20"},{"key":"offset","value":"0"}] }
+          }
+        },
+        {
+          "name": "Update Record (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Updated by admin\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/records/{{recordId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "records", "{{recordId}}"] }
+          }
+        },
+        {
+          "name": "Delete Record (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/records/{{recordId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "records", "{{recordId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/dashboard/summary", "host": ["{{baseUrl}}"], "path": ["api", "v1", "dashboard", "summary"] }
+          }
+        },
+        {
+          "name": "Category Totals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/dashboard/category-totals", "host": ["{{baseUrl}}"], "path": ["api", "v1", "dashboard", "category-totals"] }
+          }
+        },
+        {
+          "name": "Trends",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/dashboard/trends?period=monthly", "host": ["{{baseUrl}}"], "path": ["api", "v1", "dashboard", "trends"], "query": [{"key":"period","value":"monthly"}] }
+          }
+        },
+        {
+          "name": "Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{viewerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/dashboard/recent-activity?limit=5", "host": ["{{baseUrl}}"], "path": ["api", "v1", "dashboard", "recent-activity"], "query": [{"key":"limit","value":"5"}] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "adminToken", "value": "" },
+    { "key": "viewerToken", "value": "" },
+    { "key": "adminUserId", "value": "" },
+    { "key": "viewerUserId", "value": "" },
+    { "key": "createdViewerId", "value": "" },
+    { "key": "recordId", "value": "" }
+  ]
+}
