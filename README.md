@@ -52,8 +52,6 @@ server/
   db/
   scripts/
   tests/
-  docs/
-  postman/
 ```
 
 ## Frontend Structure
@@ -159,8 +157,8 @@ VITE_API_BASE_URL=http://localhost:4000/api/v1
 
 ## API Documentation Files
 
-- OpenAPI: `server/docs/openapi.yaml`
-- Postman: `server/postman/Finance-Dashboard.postman_collection.json`
+- OpenAPI: `docs/openapi.yaml`
+- Postman: `postman/Finance-Dashboard.postman_collection.json`
 
 ## Screenshots
 <img width="1919" height="837" alt="Screenshot 2026-05-08 165736" src="https://github.com/user-attachments/assets/75196a88-7f4c-486f-8af3-29695324e0eb" />
