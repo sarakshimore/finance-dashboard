@@ -52,8 +52,6 @@ server/
   db/
   scripts/
   tests/
-  docs/
-  postman/
 ```
 
 ## Frontend Structure
@@ -159,62 +157,16 @@ VITE_API_BASE_URL=http://localhost:4000/api/v1
 
 ## API Documentation Files
 
-- OpenAPI: `server/docs/openapi.yaml`
-- Postman: `server/postman/Finance-Dashboard.postman_collection.json`
+- OpenAPI: `docs/openapi.yaml`
+- Postman: `postman/Finance-Dashboard.postman_collection.json`
 
-## Sample Test Records (Create as Admin)
+## Screenshots
+<img width="1919" height="837" alt="Screenshot 2026-05-08 165736" src="https://github.com/user-attachments/assets/75196a88-7f4c-486f-8af3-29695324e0eb" />
+<img width="1919" height="675" alt="Screenshot 2026-05-08 165531" src="https://github.com/user-attachments/assets/5137db3e-78c6-4065-ab0c-a4c841ea5898" />
+<img width="1919" height="699" alt="Screenshot 2026-05-08 165743" src="https://github.com/user-attachments/assets/3ec51440-78b4-4d36-b7e0-c368ad7db8aa" />
+<img width="1919" height="704" alt="Screenshot 2026-05-08 165818" src="https://github.com/user-attachments/assets/9386202f-b07b-476e-adae-e42bd1f855a0" />
+<img width="1919" height="391" alt="Screenshot 2026-05-08 165808" src="https://github.com/user-attachments/assets/940067b0-6b5c-4114-acf5-138cc09c8074" />
 
-Use `POST /api/v1/records` with these payloads:
-
-```json
-{
-  "amount": 84500,
-  "type": "income",
-  "category": "Salary",
-  "date": "2026-05-01",
-  "notes": "Monthly salary credit"
-}
-```
-
-```json
-{
-  "amount": 12000,
-  "type": "expense",
-  "category": "Rent",
-  "date": "2026-05-02",
-  "notes": "Apartment rent"
-}
-```
-
-```json
-{
-  "amount": 3500,
-  "type": "expense",
-  "category": "Groceries",
-  "date": "2026-05-03",
-  "notes": "Weekly groceries"
-}
-```
-
-```json
-{
-  "amount": 6000,
-  "type": "income",
-  "category": "Freelance",
-  "date": "2026-05-05",
-  "notes": "Side project payment"
-}
-```
-
-```json
-{
-  "amount": 1800,
-  "type": "expense",
-  "category": "Transport",
-  "date": "2026-05-06",
-  "notes": "Fuel and commute"
-}
-```
 
 ## Why This Architecture Is Scalable
 
